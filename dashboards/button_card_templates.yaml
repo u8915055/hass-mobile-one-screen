@@ -1,0 +1,2180 @@
+  #################################################
+  #                   SETTINGS                    #
+  #################################################
+  settings:
+    variables:
+      state_on: >
+        [[[ return ['on', 'home', 'cool', 'fan_only', 'playing', 'unlocked'].indexOf(entity === undefined || entity.state) !== -1; ]]]
+      state: >
+        [[[ return entity === undefined || entity.state; ]]]
+      entity_id: >
+        [[[ return entity === undefined || entity.entity_id; ]]]
+      media_on: >
+        [[[ return entity === undefined || ['playing', 'paused'].indexOf(entity.state) !== -1; ]]]
+      media_off: >
+        [[[ return entity === undefined || ['off', 'idle', 'standby', 'unknown', 'unavailable'].indexOf(entity.state) !== -1; ]]]
+      entity_picture: >
+        [[[ return entity === undefined || entity.attributes.entity_picture; ]]]
+      timeout: >
+        [[[ return entity === undefined || Date.now() - Date.parse(entity.last_changed); ]]]
+      var_color: >
+        [[[ 
+          var battery_level=variables.state;
+          if (battery_level > 70) return '#4CAF50';
+          else if (battery_level >= 30) return '#E6E666';
+          else return '#E43333';
+        ]]]
+    styles:
+      card: 
+        - border-radius: 10px
+        - transition: none
+        - box-shadow: none
+        - font-family: Sf Display, Roboto
+        - -webkit-tap-highlight-color: rgba(0,0,0,0)
+        - background-color: '#1f1f1f'
+        - color: '#AAAAAA'
+  #################################################
+  #               BUTTON ANIMATION                #
+  #################################################
+  # button_animation:
+  #   tap_action:
+  #     haptic: medium
+  #     animation_card: |
+  #       [[[
+  #         let time = 1000;
+  #         this.shadowRoot.getElementById('card').style.animation =
+  #           `card_bounce ${time}ms`,
+  #           window.setTimeout(() => {
+  #             this.shadowRoot.getElementById('card').style.animation = 'none'
+  #           }, time);
+  #       ]]]
+  #   extra_styles: |
+  #     #card:active {
+  #       transform: scale(0.93);
+  #     }
+  #     @keyframes card_bounce {
+  #       0% {
+  #         transform: scale(.93);
+  #       }
+  #       35% {
+  #         transform: scale(1);
+  #       }
+  #       45% {
+  #         transform: scale(.97);
+  #       }
+  #       60% {
+  #         transform: scale(1);
+  #       }
+  #     }
+  #################################################
+  #               ROOM TITLE BUTTON               #
+  #################################################
+  room_title:
+    template:
+      - settings
+    name: >
+        [[[
+            return variables.view_name
+        ]]]
+    show_state: false
+    show_icon: false
+    tap_action:
+      action: none
+    styles:
+      name:
+        - justify-self: center
+        - font-size: 20px
+      card:
+        - padding: 3px 0px 3px 0px
+        - background-color: '#1EAF9B'
+        - color: '#252525'
+        - font-weight: bold
+        - margin: 2px 0px -11px 0px
+        - border-radius: 0px 0px 7px 7px
+  #################################################
+  #                 ACTION BUTTONS                #
+  #################################################
+  action_buttons:
+    variables:
+      view_name: ""
+      room_name: ""
+    show_state: false
+    show_icon: true
+    show_name: false
+    size: 45%
+    styles:
+      icon:
+        - color: >
+            [[[
+              let format_room_name = variables.room_name.replace('<br>','');
+              if (format_room_name == variables.view_name.replace(' ','')) {
+                return '#2CFFE2';
+              }
+              else {
+                return '#AAAAAA'; 
+              }
+            ]]]
+      card:
+        - height: 56px
+        - background-color: >
+            [[[
+              let format_room_name = variables.room_name.replace('<br>', '');
+              if (format_room_name == variables.view_name.replace(' ','')) {
+                return '#777';
+              }
+              else {
+                return 'rgba(115, 115, 115, 0.2)'; 
+              }
+            ]]]
+  #################################################
+  #                 STATUS ICONS                  #
+  #################################################
+  status_icons:
+    variables:
+      state_on: >
+        [[[ return ['on', 'home', 'cool', 'fan_only', 'playing', 'paused', 'open', 'unlocked'].indexOf(entity === undefined || entity.state) !== -1; ]]]
+    tap_action: none
+    show_state: false
+    show_icon: true
+    show_name: false
+    size: 85%
+    styles:
+      card:
+        - box-shadow: none
+        - border-style: none
+        - margin-right: -3px
+        - margin-left: 0px
+        - margin-top: 4px
+        - display: >
+            [[[
+              if (entity === undefined) {
+                return 'none';
+              }
+              else if (variables.state_on) {
+                return 'block';
+              }
+              else {
+                return 'none';
+              }
+            ]]]
+        - width: >
+            [[[
+              if (entity === undefined) {
+                return '0px';
+              }
+              else if (variables.state_on) {
+                return '30px';
+              }
+              else {
+                return '0px';
+              }
+            ]]]
+        - background-color: transparent
+  #################################################
+  #                STATUS BAR ENTRY               #
+  #################################################
+  status_bar_entry:
+    tap_action: none
+    show_state: true
+    show_icon: true
+    show_name: false
+    styles:
+      card:
+        - box-shadow: none
+        - background-color: transparent
+        - height: 45px
+      state:
+        - font-size: 13px
+        - line-height: 90%
+        - padding-bottom: 1px
+  #################################################
+  #                  ROOM BUTTON                  #
+  #################################################
+  room_button:
+    variables:
+      view_name: ""
+      room_name: ""
+    template:
+      - settings
+    size: 75%
+    triggers_update: all
+    name: '[[[ return variables.room_name ]]]'
+    custom_fields:
+      state1: >
+        [[[
+          return `<ha-icon
+            icon="fapro:lightbulb_24px"
+            style="width: 22px;color: #2AFFE2;">
+            </ha-icon>`
+        ]]]
+      state2: >
+        [[[
+          return `<ha-icon
+            icon="mdi:volume-high"
+            style="width: 20px;color: #2AFFE2;">
+            </ha-icon>`
+        ]]]
+    styles:
+      grid:
+        - grid-template-areas: |
+            "i state1"
+            "i state2"
+            "n n"
+        - grid-template-columns: 1fr 1fr
+        - grid-template-rows: 1fr 1fr 30px
+        - align-items: start
+      name:
+        - padding: 0px 0px 0px 8px
+        - font-size: 12px
+        - letter-spacing: 0.25px
+        - justify-self: start
+        - line-height: 115%
+        - color: '#aaa'
+        - text-align: left !important
+      icon:
+        - padding: 0px 0px 16px 0px
+      card:
+        - height: 90px
+        - background-color: >
+            [[[
+              let format_room_name = variables.room_name.replace('<br>', '');
+              if (format_room_name == variables.view_name.replace(' ','')) {
+                return 'rgba(115, 115, 115, 0.5)';
+              }
+              else { return '#1f1f1f'; }
+            ]]]
+        -  border: '1px solid #303030'
+      custom_fields:
+        state1:
+          - justify-self: right
+          - padding: 3px 3px 0px 0px
+          - display: >
+              [[[
+                let format_room_name1 = variables.room_name.replace('<br>','').toLowerCase();
+                let format_room_name2 = 'light.' + format_room_name1.replace('\'','').replace(' ','').replace('-','') + '_group';
+                if (typeof states[format_room_name2] !== 'undefined') {
+                  if (states[format_room_name2].state == 'on') { return 'block'; }
+                  else { return 'none'; }
+                }
+                else { return 'none'; }
+              ]]]
+        state2:
+          - justify-self: right
+          - padding: 3px 4px 0px 0px
+          - display: >
+              [[[
+                let format_room_name1 = variables.room_name.replace('<br>','').toLowerCase();
+                let format_room_name2 = 'media_player.' + format_room_name1.replace('\'','').replace(' ','').replace('-','') + '_group';
+                if (typeof states[format_room_name2] !== 'undefined') {
+                  let check = false;
+                  if (states[format_room_name2].state != "unavailable") {
+                    states[format_room_name2].attributes.entity_id.forEach(check_is_playing);
+                    function check_is_playing(player) {
+                      if (states[player].state == 'playing') { check = true }
+                    }
+                  }
+                  if (check) { return 'block'; }
+                  else { return 'none'; }
+                }
+                else { return 'none'; }
+              ]]]
+  #################################################
+  #                CLIMATE BUTTONS                #
+  #################################################
+  climate_buttons:
+    show_state: false
+    show_icon: false
+    show_name: true
+    styles:
+      card:
+        - height: 85px
+        - width: 85px
+        - margin: 25px 0px 0px 25px
+        - --mdc-ripple-color: 'rgba(255, 255, 255, 0.3)'
+        - background-color: 'rgba(115, 115, 115, 0.2)'
+        - border-radius: 40px
+        - box-shadow: none
+      name:
+        - font-size: 40px
+  #################################################
+  #                 CLIMATE POPUP                 #
+  #################################################
+  climate_popup:
+    triggers_update: all
+    template:
+      - settings
+    show_name: false
+    custom_fields:
+      title: >
+        [[[
+          return 'Current Temperature'
+        ]]]
+      temp: >
+        [[[
+          return entity.attributes.current_temperature + `<ha-icon
+            icon="mdi:temperature-fahrenheit"
+            style="width: 40px;display:inline-flex;vertical-align:top;margin-top:40px;color: #FFFFF4D;">
+            </ha-icon>`
+        ]]]
+      status_icons:
+        card:
+          type: custom:button-card
+          custom_fields:
+            away_icon: >
+              [[[
+                if (entity.attributes.preset_mode == 'Away' || entity.attributes.preset_mode == 'Sleep') {
+                  return `<ha-icon
+                    icon="mdi:leaf"
+                    style="height: 45px;width: 40px;color: green;padding-bottom:18px;padding-left:5px;">
+                    </ha-icon>`
+                }
+                else {
+                  return `<ha-icon
+                    icon="mdi:leaf"
+                    style="height: 45px;width: 40px;color: #FFFFFF4D;;padding-bottom:18px;">
+                    </ha-icon>`
+                }
+              ]]]
+            heating_icon: >
+              [[[
+                let newstate = entity.attributes.hvac_action;
+                if (entity.attributes.hvac_action == 'heating') {
+                  return `<ha-icon
+                    icon="mdi:fire"
+                    style="height: 45px;color: red;;padding-bottom:18px;">
+                    </ha-icon>`
+                }
+                else {
+                  return `<ha-icon
+                    icon="mdi:fire"
+                    style="height: 45px;color: #FFFFFF4D;;padding-bottom:18px;">
+                    </ha-icon>`
+                }
+              ]]]
+            fan_icon: >
+              [[[
+                if (entity.attributes.fan == 'on') {
+                  return `<ha-icon
+                    icon="mdi:fan"
+                    style="height: 45px;width: 40px;color: #2AFFE2;;padding-bottom:18px;">
+                    </ha-icon>`
+                }
+                else {
+                  return `<ha-icon
+                    icon="mdi:fan"
+                    style="height: 45px;width: 40px;color: #FFFFFF4D;;padding-bottom:18px;">
+                    </ha-icon>`
+                }
+              ]]]  
+          styles:
+            card:
+              - border: none
+              - background: transparent
+              - box-shadow: none
+            grid:
+              - grid-template-areas: |
+                  "away_icon"
+                  "heating_icon"
+                  "fan_icon"
+              - grid-template-columns: 1fr
+              - grid-template-rows: 50px 50px 50px  
+            custom_fields:
+              away_icon:
+              heating_icon:
+              fan_icon: 
+      buttons:
+        card:
+          type: horizontal-stack
+          cards:
+          - type: custom:button-card
+            name: 65
+            template:
+              - climate_buttons
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              service_data:
+                entity_id: >
+                  [[[ return variables.entity_id ]]]
+                temperature: 65
+            styles:
+              card:
+                - border: >
+                    [[[
+                      if (entity.attributes.temperature == 65) {
+                        return '2px solid #AAAAAA';
+                      }
+                      else {
+                        return 'none';
+                      }
+                    ]]]
+                - color: '#AAAAAA'
+          - type: custom:button-card
+            name: 67
+            template:
+              - climate_buttons
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              service_data:
+                entity_id: >
+                  [[[ return variables.entity_id ]]]
+                temperature: 67
+            styles:
+              card:
+                - border: >
+                    [[[
+                      if (entity.attributes.temperature == 67) {
+                        return '2px solid #AAAAAA';
+                      }
+                      else {
+                        return 'none';
+                      }
+                    ]]]
+                - color: '#AAAAAA'
+          - type: custom:button-card
+            name: 69
+            template:
+              - climate_buttons
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              service_data:
+                entity_id: >
+                  [[[ return variables.entity_id ]]]
+                temperature: 69
+            styles:
+              card:
+                - border: >
+                    [[[
+                      if (entity.attributes.temperature == 69) {
+                        return '2px solid #AAAAAA';
+                      }
+                      else {
+                        return 'none';
+                      }
+                    ]]]
+                - color: '#AAAAAA'
+      status: >
+        [[[
+          return 'Current State: ' + entity.attributes.hvac_action.charAt(0).toUpperCase() + entity.attributes.hvac_action.slice(1);
+        ]]]
+      graph:
+        card:
+          type: vertical-stack
+          cards:
+          - type: custom:button-card
+            template: plotly_header
+            variables:
+              in: "sensor.home_temperature"
+              out: "sensor.tuya_tempaaa_outside_temperature"
+            styles:
+              card:
+                - font-size: 16px
+                - padding-right: 10px
+                - border: none
+          - type: custom:mod-card
+            style:
+              plotly-graph$: |
+                ha-card.type-custom-plotly-graph {
+                  box-shadow: none;
+                }
+            card:
+              type: custom:plotly-graph
+              entities: 
+              - entity: sensor.tuya_tempaaa_outside_temperature
+                line:
+                  width: 1
+                  color: '#2CFFE2'
+                  smoothing: 1.3
+                  shape: spline
+              - entity: sensor.home_temperature
+                line:
+                  width: 1
+                  color: '#2996E7'
+                  smoothing: 1.3
+                  shape: spline
+              refresh_interval: 60
+              hours_to_show: 24h
+              disable_pinch_to_zoom: true
+              layout:
+                paper_bgcolor: '#1f1f1f'
+                plot_bgcolor: '#1f1f1f'
+                height: 180
+                showlegend: false
+                dragmode: false
+                modebar:
+                  remove: [autoscale,pan,zoom,zoomin,zoomout]
+                clickmode: none
+                margin:
+                  l: 40
+                  r: 40
+                  b: 40
+                  t: 7
+                xaxis:
+                  tickangle: 0
+                  tickformat: '%-I%p<br>%b %d'
+                  rangeselector:
+                    activecolor: '#777'
+                    bgcolor: '#555'
+                    xanchor: left
+                    x: 0.75
+                    buttons:
+                      - count: 1
+                        step: day
+                      - count: 3
+                        step: day
+                      - count: 7
+                        step: day
+    styles:
+      grid:
+        - grid-template-areas: |
+            "title status_icons"
+            "temp status_icons"
+            "status status_icons"
+            "buttons buttons"
+            "graph graph"
+        - grid-template-columns: 1fr 90px
+        - grid-template-rows: 20px 95px min-content min-content 100%
+        - align-items: start
+      card:
+        - height: 510px
+        - border: '1px solid #303030'
+        - border-radius: 10px
+        - color: '#AAAAAA'
+      custom_fields:
+        title:
+          - font-size: 22px
+          - text-align: start
+          - padding-left: 10px
+        temp:
+          - font-size: 80px
+          - text-align: start
+          - padding-left: 10px
+          - color: '#CCCCCC'
+        status:
+          - font-size: 22px
+          - text-align: start
+          - padding-left: 10px
+        graph:
+          - padding-top: 15px
+        buttons:
+          - margin-top: -20px
+  #################################################
+  #                     BLANK                     #
+  #################################################
+  blank:
+    template:
+      - settings
+    styles:
+      card:
+        - width: 186px
+        - margin: 0px -4px -5px 0px
+        - max-height: 50px
+        - min-height: 50px
+        - border: '1px solid #303030'
+  #################################################
+  #               HALF SWITCH BASE                #
+  #################################################
+  half_switch_base:
+    hold_action:
+      action: more-info
+    template:
+      - settings
+    variables:
+      secondary_info: ""
+      variable_name: ""
+      current_color: >
+        [[[ return entity === undefined || (entity.attributes.rgb_color ? 'rgb(' + entity.attributes.rgb_color + ')' : "#E7D484"); ]]]      
+    show_state: false
+    show_icon: true
+    custom_fields:
+      secondary: >
+        [[[
+            return variables.secondary_info
+        ]]]
+    styles:
+      grid:
+        - grid-template-areas: |
+            "i n"
+            "i secondary"
+        - grid-template-columns: 30px 1fr
+        - grid-template-rows: auto
+      name:
+        - position: absolute
+        - top: 10px
+        - left: 45px
+        - font-size: 13px
+      custom_fields:
+        secondary:
+          - position: absolute
+          - bottom: 10px
+          - left: 46px
+          - font-size: 10px
+          - color: >
+              [[[
+                return variables.state_on
+                  ? '#ddd'
+                  : '#bbb';
+              ]]]
+      card:
+        - width: 186.5px
+        - margin: 0px -5px -3px 0px
+        - max-height: 50px
+        - min-height: 50px
+        - color: >
+            [[[
+              return variables.state_on
+                ? '#ddd'
+                : '#bbb';
+            ]]]
+        - background-color: >
+            [[[
+              return variables.state_on
+                ? '#555'
+                : '#1f1f1f';
+            ]]]
+        -  border: '1px solid #303030'
+      icon:
+        - border-radius: 3px 45px 45px 3px #3 35 35 3
+        - min-width: 22px
+        - max-width: 22px
+        - min-height: 50px
+        - max-height: 50px
+        - margin: 0px 0px 0px -8px
+        - padding: 0px 4px 0px 8px
+        - color: >
+            [[[
+              return variables.state_on
+                ? '#555'
+                : '#bbb';
+            ]]]
+        - background-color: >
+            [[[
+              return variables.state_on
+                ? variables.current_color
+                : '#555';
+            ]]]
+  #################################################
+  #               HALF SWITCH DIMMER              #
+  #################################################
+  half_switch_dimmer:
+    variables:
+      variable_input: >
+        [[[ return entity === undefined || Math.round((entity.attributes.brightness || 0) / 2.54); ]]]     
+    custom_fields:
+      variable_arc:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: false
+          custom_fields:
+            circle: >
+              [[[
+                let input = variables.variable_input,
+                  under_arc_color = input > 0 ? '#444': 'rgba(0,0,0,0)',
+                  light_arc_color = input > 0 ? variables.current_color: 'rgba(0,0,0,0)',
+                  radius = 30,
+                  circumference = radius * 2 * Math.PI,
+                  on_circ = input/100 * circumference * .23,
+                  off_circ = circumference - on_circ,
+                  offset = circumference * 0.115,
+                  offset2 = circumference * 0.115,
+                  full_circ = circumference * .23,
+                  off_full_circ = circumference - full_circ
+                return `
+                  <svg viewBox="0 0 50 50">
+                    <style>
+                      circle {
+                        transform: scaley(-.97);
+                        transform-origin: 50% 50%;
+                        stroke-linecap: round;
+                      }
+                    </style>
+                    <circle cx="18" cy="24.2" r="${radius}" stroke="${under_arc_color}" stroke-width="4" fill="none" stroke-dasharray="${full_circ} ${off_full_circ}" stroke-dashoffset="${offset2}"; />
+                    <circle cx="18" cy="24.2" r="${radius}" stroke="${light_arc_color}" stroke-width="4" stroke-dasharray="${on_circ} ${off_circ}" stroke-dashoffset="${offset}" fill="none";  />
+                  </svg>
+                `;
+              ]]]
+          styles:
+            card:
+              - background-color: transparent
+              #- border: 1px solid green
+              - box-shadow: none
+              - height: 50px
+              - width: 20px
+              - position: absolute
+              - right: 145px
+              - bottom: 0px     
+            custom_fields:
+              circle:
+                - left: -32px
+                - bottom: 2px
+                - position: absolute
+                - width: 48px
+                - height: 48px
+  #################################################
+  #              HALF SWITCH SETTINGS             #
+  #################################################
+  half_switch_settings:
+    custom_fields:
+      settings_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:tune-vertical-variant
+          size: 20px
+          tap_action: 
+            action: more-info
+          styles:
+            card:
+              - background-color: transparent
+              - box-shadow: none
+              - border: none
+              - height: 36px
+              - width: 32px
+              - position: absolute
+              - right: 6px
+              - bottom: 8px
+              - border-radius: 0px
+            icon:
+              - border-radius: 15px 2px 2px 15px
+              - padding: 0px 4px 0px 8px
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+              - background: transparent
+  #################################################
+  #            HALF SWITCH DOUBLECLICK            #
+  #################################################
+  half_switch_doubleclick:
+    custom_fields:
+      doubleclick_button: >
+        [[[
+          return `<ha-icon
+            icon="mdi:gesture-double-tap"
+            style="width: 22px; height: 22px; color: #777;">
+            </ha-icon>`
+        ]]]
+    styles:
+      custom_fields:
+        doubleclick_button:
+          - position: absolute
+          - right: 31px
+          - bottom: 15px
+  #################################################
+  #                HALF LUTRON LIGHT              #
+  #################################################
+  half_lutron_light:
+    template:
+      - half_switch_base
+      - half_switch_dimmer
+      - half_switch_settings
+    tap_action:
+      action: call-service
+      service: script.lutron_dimmer
+      service_data:
+        dimmer: >
+          [[[ return variables.entity_id ]]]
+        variable_name: >
+          [[[ return variables.variable_name ]]]
+      haptic: medium
+  #################################################
+  #               HALF DIMMABLE LIGHT             #
+  #################################################
+  half_dimmable_light:
+    template:
+      - half_switch_base
+      - half_switch_dimmer
+      - half_switch_settings
+    tap_action:
+      action: call-service
+      service: light.toggle
+      service_data:
+        entity_id: >
+          [[[ return variables.entity_id ]]]
+      haptic: medium
+  #################################################
+  #               HALF SWITCH LIGHT               #
+  #################################################
+  half_switch_light:
+    template:
+      - half_switch_base
+      - half_switch_settings
+    tap_action:
+      action: call-service
+      service: switch.toggle
+      service_data:
+        entity_id: >
+          [[[ return variables.entity_id ]]]
+      haptic: medium
+  #################################################
+  #                  HALF COVER                   #
+  #################################################
+  half_cover:
+    template:
+      - half_switch_base
+      - half_switch_dimmer
+      - half_switch_settings
+    variables:
+      variable_input: >
+        [[[ return entity === undefined || Math.round(entity.attributes.current_position); ]]]
+    size: 24px
+    tap_action:
+      action: call-service
+      service: cover.toggle
+      service_data:
+        entity_id: >
+          [[[ return variables.entity_id ]]]
+      haptic: medium
+    custom_fields:
+      variable_arc:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: false
+          custom_fields:
+            circle: >
+              [[[
+                let input = variables.variable_input,
+                  under_arc_color = '#555',
+                  light_arc_color = '#2CFFE2',
+                  radius = 30,
+                  circumference = radius * 2 * Math.PI,
+                  on_circ = (1-input/100) * circumference * .23,
+                  off_circ = circumference - on_circ,
+                  offset = circumference * 0.115,
+                  offset2 = circumference * 0.115 - input/100 * circumference * .23 ,
+                  full_circ = circumference * .23,
+                  off_full_circ = circumference - full_circ
+                return `
+                  <svg viewBox="0 0 50 50">
+                    <style>
+                      circle {
+                        transform: scaley(-.97);
+                        transform-origin: 50% 50%;
+                        stroke-linecap: round;
+                      }
+                    </style>
+                    <circle cx="18" cy="24.2" r="${radius}" stroke="${under_arc_color}" stroke-width="4" fill="none" stroke-dasharray="${full_circ} ${off_full_circ}" stroke-dashoffset="${offset}"; />
+                    <circle cx="18" cy="24.2" r="${radius}" stroke="${light_arc_color}" stroke-width="4" stroke-dasharray="${on_circ} ${off_circ}" stroke-dashoffset="${offset2}" fill="none";  />
+                  </svg>
+                `;
+              ]]]
+  #################################################
+  #                   HALF SCENE                  #
+  #################################################
+  half_scene:
+    template:
+      - half_switch_base
+    variables:
+      automation_to_run: ""
+    tap_action:
+      action: call-service
+      service: automation.trigger
+      service_data:
+        entity_id: >
+          [[[
+            return 'automation.' + variables.automation_to_run;
+          ]]]
+      haptic: medium
+    styles:
+      name:
+        - padding-top: 1px
+        - white-space: normal
+        - text-align: left
+        - line-height: 14px
+      card:
+        - width: 91.75px
+        - margin: 0px -5px -5px 0px
+        - max-height: 50px
+        - min-height: 50px
+        - color: '#ccc'
+        - background-color: '#1F71AF'
+      icon:
+        - background-color: '#154E78'
+  #################################################
+  #                  GARAGE DOOR                  #
+  #################################################
+  half_garage_door:
+    template:
+      - half_switch_base
+      - half_switch_settings
+    state:
+      - value: 'open'
+        icon: mdi:garage-open
+        color: '#FDD835'
+      - value: 'closed'
+        icon: mdi:garage
+      - value: 'opening'
+        icon: mdi:arrow-up-bold
+        color: '#FDD835'
+      - value: 'closing'
+        icon: mdi:arrow-down-bold
+        color: '#FDD835'
+  #################################################
+  #                   DOOR LOCK                   #
+  #################################################
+  half_door_lock:
+    template:
+      - half_switch_base
+      - half_switch_settings
+    state:
+      - value: 'unlocked'
+        icon: mdi:lock-open-outline
+        color: '#FDD835'
+      - value: 'locked'
+        icon: mdi:lock-outline
+        color: '#EBEBEB'
+    tap_action:
+      action: call-service
+      service: script.lock_toggle
+      service_data:
+        lock: >
+          [[[ return variables.entity_id ]]]
+      haptic: medium
+  #################################################
+  #                  WATER VALVE                  #
+  #################################################
+  half_water_valve:
+    template:
+      - half_switch_base
+      - half_switch_settings
+      - half_switch_doubleclick
+    icon: >
+      [[[
+        if (states[variables.entity_id].attributes.Valve_status == 'opened')
+          return 'mdi:valve-open';
+        else if (states[variables.entity_id].attributes.Valve_status == 'closed')
+          return 'mdi:valve-closed';
+        else
+          return 'mdi:help';
+      ]]]
+    tap_action: none
+    double_tap_action:
+      action: call-service
+      service: script.water_valve_toggle
+      service_data:
+        valve: >
+          [[[ return variables.entity_id ]]]
+      haptic: medium
+    styles:
+      icon:
+        - color: >
+            [[[
+              if (states[variables.entity_id].attributes.Valve_status == 'opened')
+                return '#bbb';
+              else
+                return '#555';
+            ]]]
+        - background-color: >
+            [[[
+              if (states[variables.entity_id].attributes.Valve_status == 'opened')
+                return '#555';
+              else
+                return '#E7D484';
+            ]]]
+      card:
+        - color: >
+            [[[
+              if (states[variables.entity_id].attributes.Valve_status == 'opened')
+                return '#bbb';
+              else
+                return '#ddd';
+            ]]]
+        - background-color: >
+            [[[
+              if (states[variables.entity_id].attributes.Valve_status == 'opened')
+                return '#1f1f1f';
+              else
+                return '#555';
+            ]]]
+
+  #################################################
+  #                IRRIGATION ZONE                #
+  #################################################
+  half_irrigation_zone:
+    template:
+      - half_switch_base
+      - half_switch_settings
+      - half_switch_doubleclick
+    variables:
+      secondary_info: >
+        [[[
+          var variable_name = 'var.zone_' + states[entity.entity_id].attributes.id;
+          var time_limit = states[variable_name].state;   
+          if (states[entity.entity_id].state == 'on' && states[entity.entity_id].attributes.status == 'Running') {
+            let run_complete = states[entity.entity_id.replace('switch','sensor') + "_run_completion_time"].state;
+            let run_complete_milli = new Date(run_complete).getTime();
+            let current = states['sensor.current_time'].state;
+            let current_milli = new Date(current).getTime();
+            let diff_time = (run_complete_milli-current_milli)/1000;              
+            if (diff_time > 0) {
+              let hours = Math.floor(diff_time / 3600);
+              let minutes = Math.floor((diff_time - (hours * 3600)) / 60);
+              let minutesString = minutes.toString();
+              let seconds = Math.floor(diff_time - (hours * 3600) - (minutes * 60));
+              let secondsString = seconds.toString().padStart(2,'0');
+              return "Time Left: " + minutesString + ":" + secondsString;;                
+            }
+            else {
+              return "Duration: " + time_limit + ` min`;
+            }
+          }
+          else {
+            return "Duration: " + time_limit + ` min`;
+          }
+        ]]]
+    tap_action:
+      action: none
+    double_tap_action: 
+      action: call-service
+      service: script.irrigation_zone_toggle
+      service_data:
+        irrigation_zone: >
+          [[[ return variables.entity_id ]]]
+        duration: >
+          [[[
+              var variable_name = 'var.zone_' + entity.attributes.id; //
+              return (states[variable_name].state)*60; //
+          ]]]
+      haptic: medium
+    icon: >
+      [[[
+        if (states[variables.entity_id].attributes.status == 'Queued')
+          return 'custom:ha-sprinkler-zone-pause';
+        else if (states[variables.entity_id].attributes.status == 'Running')
+          return 'custom:ha-sprinkler-on';
+        else if (states[variables.entity_id].attributes.status == 'Not Running')
+          return 'custom:ha-sprinkler-off';
+        else
+          return 'custom:ha-sprinkler-off';
+      ]]]
+    custom_fields:
+      settings_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:tune-vertical-variant
+          size: 20px
+          tap_action: 
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup           
+              data:
+                title: " "
+                card_mod:
+                  style:
+                    .: | 
+                      div.container,div.content {
+                          outline: none !important;
+                      }  
+                    irrigation-popup-card$: |
+                      div.icon {
+                        display: none;
+                      }
+                      h4#positionValue {
+                        padding-top: 30px;
+                        font-size: 36px;
+                        font-weight: 400;
+                      }
+                      div#popup {
+                        margin-top: -2px;
+                        padding-top: 0px;
+                        padding-bottom: 116px;
+                      }
+                      .range-holder input[type="range"]::-webkit-slider-thumb {
+                        width: 34px !important;
+                        border-radius: 4px !important;
+                        border-right:15px solid var(--slider-color) !important;
+                        border-left:15px solid var(--slider-color) !important;
+                        border-top:15px solid var(--slider-color) !important;
+                        border-bottom:15px solid var(--slider-color) !important;
+                        height: 80px !important;
+                      }
+                    ha-header-bar$: |
+                      .mdc-top-app-bar {
+                        display: none !important;
+                      }
+                content:
+                  type: custom:irrigation-popup-card
+                  entity: >
+                    [[[ return variables.entity_id; ]]]
+                  fullscreen: false
+                  sliderWidth: 100px
+                  sliderHeight: 320px
+                  borderRadius: 24px
+                  sliderColor: '#00C4A9'
+                  sliderTrackColor: '#00C4A9'
+                  sliderThumbColor: '#ffffff'
+
+                  sliderService: cover.set_cover_position
+                  maximumCycleTime: 30
+
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - height: 36px
+              - width: 32px
+              - position: absolute
+              - right: 6px
+              - bottom: 7px
+            icon:
+              - border-radius: 15px 2px 2px 15px
+              - padding: 0px 4px 0px 8px
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+              - background: transparent
+    styles:
+      custom_fields:
+        secondary:
+          - font-size: 11px
+      icon:
+        - color: >
+            [[[
+              return variables.state_on
+                ? '#444'
+                : '#bbb';
+            ]]]
+        - background-color: >
+            [[[
+              return variables.state_on
+                ? '#46B0E6'
+                : '#555';
+            ]]]
+  #################################################
+  #              IRRIGATION PROGRAM               #
+  #################################################
+  half_irrigation_program:
+    template:
+      - half_switch_base
+      - half_switch_settings
+    variables:
+      enabled_variable: ""
+      secondary_info: >
+        [[[
+          if (states[variables.enabled_variable].state == 'on')
+            return 'Enabled';
+          else if (states[variables.enabled_variable].state == 'off')
+            return 'Disabled';
+        ]]]
+    custom_fields:
+      settings_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.enabled_variable; ]]]
+    tap_action:
+      action: none
+    double_tap_action: 
+      action: call-service
+      service: script.irrigation_program_toggle
+      service_data:
+        irrigation_program: >
+          [[[ return variables.entity_id ]]]
+      haptic: medium
+    state:
+      - value: 'on'
+        icon: custom:ha-sprinkler-program-on
+        color: '#8CECFF'
+      - value: 'off'
+        icon: custom:ha-sprinkler-program-off
+  #################################################
+  #                  MEDIA BASE                   #
+  #################################################
+  media_base:
+    template:
+      - settings
+      - half_switch_dimmer
+    icon: mdi:google-assistant
+    variables:
+      variable_input: >
+        [[[ return variables.state_on
+          ? Math.round(entity.attributes.volume_level * 100)
+          : 0;
+        ]]]
+      current_color: '#2CFFE2'
+      secondary_info: ""
+    hold_action:
+      action: more-info
+    show_state: false
+    show_icon: true
+    name: >
+      [[[
+        return entity.attributes.friendly_name + " - " + entity.state.charAt(0).toUpperCase() + entity.state.slice(1);
+      ]]]
+    size: 23px
+    tap_action: none
+    custom_fields:
+      secondary: >
+        [[[
+            return variables.state_on
+                ? entity.attributes.media_title
+                  ? entity.attributes.media_title
+                  : entity.attributes.app_name
+                : "Not Playing";
+        ]]]
+      volume_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:volume-medium
+          size: 26px
+          tap_action: 
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup           
+              data:
+                title: " "
+                card_mod:
+                  style:
+                    .: | 
+                      div.container,div.content {
+                          outline: none !important;
+                      }  
+                    media_player-popup-card$: |
+                      div.icon {
+                        display: none;
+                      }
+                      h4#volumeValue {
+                        padding-top: 30px;
+                        font-size: 36px;
+                        font-weight: 400;
+                      }
+                      div#popup {
+                        margin-top: -2px;
+                        padding-top: 0px;
+                        padding-bottom: 116px;
+                      }
+                      .range-holder input[type="range"]::-webkit-slider-thumb {
+                        width: 34px !important;
+                        border-radius: 4px !important;
+                        border-right:15px solid var(--slider-color) !important;
+                        border-left:15px solid var(--slider-color) !important;
+                        border-top:15px solid var(--slider-color) !important;
+                        border-bottom:15px solid var(--slider-color) !important;
+                        height: 80px !important;
+                      }
+                    ha-header-bar$: |
+                      .mdc-top-app-bar {
+                        display: none !important;
+                      }
+                content:
+                  type: custom:media_player-popup-card
+                  entity: >
+                    [[[ return variables.entity_id; ]]]
+                  fullscreen: false
+                  sliderWidth: 100px
+                  sliderHeight: 320px
+                  borderRadius: 24px
+                  sliderColor: '#00C4A9'
+                  sliderTrackColor: '#2F5857'
+                  sliderThumbColor: '#ffffff'
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: '1px solid #444'
+              - height: 40px
+              - width: 40px
+              - border-radius: 24px
+            icon:
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+      tts_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:speaker-message
+          size: 22px
+          tap_action: 
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup           
+              data:
+                title: " "
+                card_mod:
+                  style:
+                    .: | 
+                      div.container,div.content {
+                          outline: none !important;
+                      }  
+                content:
+                  type: entities
+                  entities:
+                    - entity: input_text.google_tts_input
+                      name: ' '
+                    - type: call-service
+                      name: ' '
+                      icon: 'mdi:voice'
+                      action_name: Announce It...
+                      service: script.send_annoucement
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: '1px solid #444'
+              - height: 40px
+              - width: 40px
+              - border-radius: 24px
+            icon:
+              - padding-left: 4px
+              - padding-top: 1px
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+      play_pause_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:play-pause
+          size: 24px
+          tap_action:
+            action: call-service
+            service: media_player.media_play_pause
+            service_data:
+              entity_id: >
+                [[[
+                  return variables.entity_id;
+                ]]]
+            haptic: medium
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: '1px solid #444'
+              - height: 40px
+              - width: 40px
+              - border-radius: 24px
+            icon:
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+      variable_arc:
+        card:
+          styles:
+            card:
+              - right: 331px
+              - bottom: -1px 
+    styles:
+      grid:
+        - grid-template-areas: |
+            "i n volume_button tts_button play_pause_button . "
+            "i secondary volume_button tts_button play_pause_button . "
+        - grid-template-columns: 40px 1fr 46px 46px 46px 5px
+        - grid-template-rows: auto
+      name:
+        - position: absolute
+        - top: 10px
+        - left: 45px
+        - font-size: 13px
+        - align-self: end
+        - justify-self: start
+      custom_fields:
+        secondary:
+          - font-size: 10px
+          - position: absolute
+          - bottom: 12px
+          - left: 45px
+          - color: >
+              [[[
+                return variables.state_on
+                  ? '#2CFFE2'
+                  : '#777';
+              ]]]
+      card:
+        - width: 376px
+        - margin: 0px -4px -3px 0px
+        - max-height: 50px
+        - min-height: 50px
+        - color: >
+            [[[
+              return variables.state_on
+                ? '#ddd'
+                : '#bbb';
+            ]]]
+        - background-color: >
+            [[[
+              return variables.state_on
+                ? '#777'
+                : '#1f1f1f';
+            ]]]
+        -  border: '1px solid #303030'
+      icon:
+        - min-width: 22px
+        - max-width: 22px
+        - min-height: 50px
+        - max-height: 50px
+        - border-radius: 3px 45px 45px 3px
+        - padding: 0px 5px 0px 8px
+        - margin: 23px 0px 23px -19px
+        - color: >
+            [[[
+              return variables.state_on
+                ? '#555'
+                : '#bbb';
+            ]]]
+        - background-color: >
+            [[[
+              return variables.state_on
+                ? '#2CFFE2'
+                : '#555';
+            ]]]
+  #################################################
+  #                 MEDIA SONOS                   #
+  #################################################
+  media_sonos:
+    template:
+      - media_base
+    icon: mdi:speaker-wireless
+    size: 22px
+    custom_fields:
+      secondary: >
+        [[[
+            return variables.state_on
+                ? entity.attributes.media_artist
+                  ? entity.attributes.media_artist + ' - ' + entity.attributes.media_album_name + '<br>' + 'Song: ' + entity.attributes.media_title
+                  : entity.attributes.media_title
+                : "Not Playing";
+        ]]]
+      logo:
+        card:
+            style:
+              .: | 
+                ha-card {
+                  background-color: transparent;
+                }    
+            type: picture
+            image: /local/sonos-logo.png
+      variable_arc:
+        card:
+          styles:
+            card:
+              - bottom: 53px
+              - right: 337px  
+      play_pause_button:
+        card:
+          styles:
+            card:
+              - width: 50px
+              - border: none
+              - background-color: rgba(100,100,100,0.4)
+      volume_button:
+        card:
+          styles:
+            card:
+              - width: 50px
+              - border: none
+              - background-color: rgba(100,100,100,0.4)
+      mute_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:volume-mute
+          size: 24px
+          tap_action:
+            action: call-service
+            service: script.mute_toggle
+            service_data:
+              media_player: >
+                [[[ 
+                  return variables.entity_id; 
+                ]]]
+            haptic: medium
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: none
+              - height: 40px
+              - width: 50px
+              - border-radius: 24px
+              - background-color: rgba(100,100,100,0.4)
+            icon:
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+      back_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:skip-previous
+          size: 24px
+          tap_action:
+            action: call-service
+            service: media_player.media_previous_track
+            service_data:
+              entity_id: >
+                [[[
+                  return variables.entity_id;
+                ]]]
+            haptic: medium
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: none
+              - height: 40px
+              - width: 50px
+              - border-radius: 24px
+              - background-color: rgba(100,100,100,0.4)
+            icon:
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+      forward_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:skip-next
+          size: 24px
+          tap_action:
+            action: call-service
+            service: media_player.media_next_track
+            service_data:
+              entity_id: >
+                [[[
+                  return variables.entity_id;
+                ]]]
+            haptic: medium
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: none
+              - height: 40px
+              - width: 50px
+              - border-radius: 24px
+              - background-color: rgba(100,100,100,0.4)
+            icon:
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+      content_button:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[ return entity === undefined || variables.entity_id; ]]]
+          show_name: false
+          show_icon: true
+          icon: mdi:playlist-music
+          size: 24px
+          tap_action:
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup           
+              data:
+                title: " "
+                card_mod:
+                  style:
+                    .: | 
+                      div.container,div.content {
+                          outline: none !important;
+                      }   
+                      div.container {
+                        padding: 0px !important;
+                      }
+                    ha-dialog-header$: |
+                      div.header-bar {
+                        padding: 0px;
+                      }
+                    ha-icon-button$: |
+                      mwc-icon-button {
+                        height: 35px;
+                      }
+                content:
+                  type: custom:decluttering-card
+                  template: sonos_media_declutter
+                  variables:
+                    - media_entity: >
+                        [[[ return variables.entity_id; ]]]
+          styles:
+            card:
+              - background: transparent
+              - box-shadow: none
+              - border: none
+              - height: 40px
+              - width: 50px
+              - background-color: rgba(100,100,100,0.4)
+              - border-radius: 24px
+            icon:
+              - border-radius: 15px 2px 2px 15px
+              - padding: 0px 6px 0px 8px
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#ddd'
+                      : '#bbb';
+                  ]]]
+              - background: transparent
+    styles:
+      grid:
+        - grid-template-areas: |
+            "i n n n n n logo logo"
+            "i secondary secondary secondary secondary secondary secondary ."
+            ". volume_button mute_button back_button play_pause_button forward_button content_button ."
+            ". . . . . . . ."
+        - grid-template-columns: 38px 55px 55px 55px 55px 55px 1fr
+        - grid-template-rows: 30.5px 26.5px 40px 6px
+      card:
+        - background-image: >
+            [[[                        
+              if(states[variables.entity_id].attributes.entity_picture) 
+                return "linear-gradient(to bottom, rgba(0, 0, 0, 0.52), rgba(0, 0, 0, 0.75)),url("+states[variables.entity_id].attributes.entity_picture+")";
+              else  
+                return "none";
+            ]]]
+        - background-size: contain
+        - background-color: '#1f1f1f'
+        - max-height: 103px
+        - min-height: 103px
+        - border: '1px solid #303030'
+      name:
+        - position: absolute
+        - top: 8px
+        - left: 45px
+      icon:
+        - padding: 0px 5px 0px 9px
+        - margin: 4px 0px 11px -19px
+      custom_fields:
+        secondary:
+          - font-size: 11px
+          - position: absolute
+          - bottom: 52.5px
+          - left: 46px
+          - font-size: 10px
+          - text-align: left
+          - color: >
+              [[[
+                return variables.state_on
+                  ? '#2CFFE2'
+                  : '#777';
+              ]]]
+        tts_button:
+          - display: none
+        logo:
+          - width: 50px
+          - justify-self: end
+          - align-self: start
+          - padding: 5px 5px 0px 0px
+  #################################################
+  #              SONOS PRESET BUTTON              #
+  #################################################
+  sonos_preset_button:
+    template:
+      - settings
+    variables:
+      preset: ""
+      source: ""
+      player: ""
+    hold_action: none
+    tap_action:
+      action: call-service
+      service: media_player.select_source
+      service_data:
+        entity_id: >
+            [[[ return variables.player ]]]
+        source: >
+            [[[ return variables.preset ]]]
+    styles:
+      name:
+        - display: none
+      card:
+        - border-radius: 20px
+        - border: '1px solid #333'
+        - aspect-ratio: 1 / 1
+        - background-image: >
+            [[[                        
+              return "url('/local/my-resources/img/" + variables.preset + "200.png')";
+            ]]]
+        - background-repeat: no-repeat
+        - background-size: cover
+  #################################################
+  #               MEDIA LOGITECH                  #
+  #################################################
+  media_logitech:
+    template:
+      - media_sonos
+    custom_fields:
+      logo:
+        card:
+            style:
+              .: | 
+                ha-card {
+                  background-color: transparent;
+                }    
+            type: picture
+            image: /local/logitech-logo.png
+  #################################################
+  #            TWO STATE SENSOR BUTTON            #
+  #################################################
+  two_state_sensor:
+    template:
+      - half_switch_base
+    variables:
+      state1: ""
+      state1_name: ""
+      state1_unit: ""
+      state2: ""
+      state2_name: ""
+      state2_unit: ""
+    triggers_update: all
+    show_state: false
+    show_icon: true
+    custom_fields:
+      s1name: >
+        [[[
+            return variables.state1_name;
+        ]]]
+      s1: >
+        [[[
+            if (isNaN (states[variables.state1].state)) {
+              return states[variables.state1].state;
+            }
+            else {
+              return Math.round(states[variables.state1].state) + variables.state1_unit;
+            }
+        ]]]
+      s2name: >
+        [[[
+            return variables.state2_name;
+        ]]]
+      s2: >
+        [[[
+            if (isNaN (states[variables.state2].state)) {
+              return states[variables.state2].state;
+            }
+            else {
+              return Math.round(states[variables.state2].state) + variables.state2_unit;
+            }
+        ]]]
+    styles:
+      grid:
+        - grid-template-areas: |
+            "i n s1name s2name"
+            "i n s1 s2"
+        - grid-template-columns: 30px 206px 70px 70px
+        - grid-template-rows: auto
+      card:
+        - width: 376px
+        - font-size: 13px
+      name:
+        - padding-top: 7px
+        - text-align: left
+      custom_fields:
+        s1name:
+        - padding-top: 5px
+        s2name:
+        - padding-top: 5px
+        s1:
+        - padding-bottom: 5px
+        s2:
+        - padding-bottom: 5px
+  #################################################
+  #           HALF BATTERY SENSOR BUTTON          #
+  #################################################
+  half_sensor_battery:
+    template:
+      - half_switch_base
+    show_state: true
+    show_icon: true
+    tap_action:
+      action: more-info
+    styles:
+      grid:
+        - grid-template-areas: |
+            "i n s"
+            "i n s"
+        - grid-template-columns: 30px 91px 50px
+        - grid-template-rows: auto
+      name:
+        - position: relative
+        - top: 0px
+        - left: 15px
+        - white-space: normal
+        - text-align: left
+        - font-size: 12px
+      state:
+        - position: relative
+        - top: 0px
+        - right: -15px
+        - font-size: 13px
+        - white-space: normal
+      icon:
+        - border-radius: 3px 45px 45px 3px
+        - min-width: 22px
+        - max-width: 22px
+        - min-height: 50px
+        - max-height: 50px
+        - margin: 0px 0px 0px -8px
+        - padding: 0px 4px 0px 8px
+        - color: '[[[ return variables.var_color ]]]'
+        - background-color: '#555'
+      card:
+        - color: '#bbb'
+        - background-color: '#1f1f1f'
+  #################################################
+  #                 PLOTLY HEADER                 #
+  #################################################
+  plotly_header:
+    template:
+      - settings
+    variables:
+      in: ""
+      out: ""
+      hum: ""
+    show_state: false
+    show_icon: false
+    tap_action:
+      action: none
+    custom_fields:
+      in: >
+        [[[
+          return variables.in ? 'Inside ' + Math.round(hass.states[variables.in].state) + '°F' : '';
+        ]]]
+      out: >
+        [[[
+          return variables.out ? 'Outside ' + Math.round(hass.states[variables.out].state) + '°F' : '';
+        ]]]
+      hum: >
+        [[[
+          return variables.hum ? 'Humidity ' + Math.round(hass.states[variables.hum].state) + '%' : '';
+        ]]]
+      in-box: > 
+        [[[ return ''; ]]]
+      out-box: > 
+        [[[ return ''; ]]]
+      hum-box: >
+        [[[ return ''; ]]]
+    styles:
+      grid:
+        - grid-template-areas: |
+            ". in-box in hum-box hum out-box out"
+        - grid-template-columns: 10px 20px 1fr 20px 1fr 20px 1fr
+        - grid-template-rows: auto
+      card:
+        - border-radius: 10px 10px 0px 0px
+        - min-width: 376px
+        - max-width: 376px
+        - min-height: 24px
+        - max-height: 24px
+        - background-color: '#1f1f1f'
+        - margin-bottom: -12px
+        - color: '#BBBBBB'
+        - font-size: 12px
+        - padding-top: 18px
+        - border: '1px solid #303030'
+        - border-bottom: none
+      custom_fields:
+        in-box:
+          - background-color: >
+              [[[
+                return variables.in ? '#2996E7' : '#1f1f1f'; 
+              ]]]
+          - min-width: 20px
+          - min-height: 20px
+          - border-radius: 10px
+        in:
+          - justify-self: start
+          - margin-left: 5px
+        out-box:
+          - background-color: >
+              [[[
+                return variables.out ? '#2CFFE2' : '#1f1f1f'; 
+              ]]]
+          - min-width: 20px
+          - min-height: 20px
+          - border-radius: 10px
+        out:
+          - justify-self: start
+          - margin-left: 5px
+        hum-box:
+          - background-color: >
+              [[[
+                return variables.hum ? '#872BFF' : '#1f1f1f'; 
+              ]]]
+          - min-width: 20px
+          - min-height: 20px
+          - border-radius: 10px
+        hum:
+          - justify-self: start
+          - margin-left: 5px
+  #################################################
+  #            POWER MONITORING SWITCH            #
+  #################################################
+  power_monitoring_switch:
+    template:
+      - settings
+      - half_switch_base
+      - half_switch_settings
+    variables:
+      current_power_sensor: ""
+      monthly_power_sensor: ""
+      filter_power_sensor: ""
+    custom_fields:
+      cpower:
+        card:
+          type: custom:button-card
+          entity: >
+            [[[
+                return variables.current_power_sensor;
+            ]]]
+          show_state: true
+          show_icon: false
+          show_name: false
+          tap_action: 
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup         
+              data:
+                title: " "
+                card_mod:
+                  style:
+                    .: | 
+                      div.container,div.content {
+                          outline: none !important;
+                      }  
+                content:
+                  type: vertical-stack
+                  cards:
+                    - type: custom:button-card
+                      custom_fields:
+                        this_month: >
+                            [[[
+                            let rate = 0.1;
+                            let value2 = parseFloat(states[variables.monthly_power_sensor].state).toFixed(2);
+                            return "This Month: " + value2 + " <span style='font-size:13px;'>kWh</span>";   
+                            ]]]
+                        last_month: >
+                            [[[
+                              let rate = 0.1;
+                              let value1 = (parseFloat(states[variables.monthly_power_sensor].attributes.last_period)).toFixed(2);
+                              return "Last Month: " + value1 + " <span style='font-size:13px;'>kWh</span>";
+                            ]]]
+                      styles:
+                        grid:
+                          - grid-template-areas: |
+                              "this_month last_month"
+                          - grid-template-columns: 1fr 1fr
+                          - grid-template-rows: auto
+                        card:
+                          - background: transparent
+                          - box-shadow: none
+                          - margin: 0px
+                          - padding: 0px
+                        custom_fields:
+                          this_month:
+                            - font-size: 14px
+                          last_month:
+                            - font-size: 14px
+                    - type: custom:plotly-graph
+                      entities: 
+                      - entity: >
+                          [[[ return variables.filter_power_sensor; ]]]
+                        line:
+                          width: 2
+                          color: '#2996E7'
+                      refresh_interval: 60
+                      hours_to_show: 24h
+                      disable_pinch_to_zoom: true
+                      layout:
+                        height: 400
+                        dragmode: false
+                        modebar:
+                          remove: [autoscale,pan,zoom,zoomin,zoomout]
+                        clickmode: none
+                        margin:
+                          t: 0
+                          b: 0
+                          l: 45
+                          r: 10
+                        xaxis:
+                          rangeselector:
+                            activecolor: '#777'
+                            bgcolor: '#555'
+                            yanchor: top
+                            y: -.18
+                            xanchor: left
+                            x: -.07
+                            buttons:
+                              - count: 1
+                                step: day
+                              - count: 3
+                                step: day
+                              - count: 7
+                                step: day
+          styles:
+            card:
+              - box-shadow: none
+              - height: 40px
+              - width: 50px
+              - border-radius: 24px
+              - color: >
+                  [[[
+                    return variables.state_on
+                      ? '#DDDDDD'
+                      : '#BBBBBB';
+                  ]]]
+              - background-color: >
+                  [[[
+                    return variables.state_on
+                      ? '#888'
+                      : '#555';
+                  ]]]
+              - font-size: 14px
+              - font-weight: bold
+            grid:
+              - grid-template-areas: |
+                  "s"
+    styles:
+      card:
+        - width: 376px
+      grid:
+        - grid-template-areas: |
+            "i n cpower ."
+            "i secondary cpower ."
+        - grid-template-columns: 30px 1fr 45px 50px
+        - grid-template-rows: auto
+      custom_fields:
+        this_month:
+          - border: 1px solid green
+          - font-size: 11px
+          - font-weight: bold
+        last_month:
+          - font-size: 11px
+          - font-weight: bold
+
+
+  #################################################
+  #                    SIDEBAR                    #
+  #################################################
+  # sidebar:
+  #   show_state: false
+  #   show_icon: false
+  #   tap_action:
+  #     action: none
+  #   name: |
+  #     [[[
+  #       if (entity) {
+  #         let attr = [];
+  #         for (let [k, value] of Object.entries(entity.attributes))
+  #           value !== false && (attr += `<p>${value}</p>`);
+  #         return attr;
+  #       }
+  #     ]]]
+  #   extra_styles: |
+  #     #card {
+  #       padding: 0;
+  #     }
+  #     #container {
+  #       display: flex !important;
+  #     }
+  #     #name {
+  #       padding: 1.8vw 2.5vw 0 var(--custom-layout-card-padding);
+  #       white-space: normal;
+  #       text-align: left;
+  #     }
+  #     .time {
+  #       font-family: SF Text, Roboto;
+  #       font-size: var(--sidebar-time-font-size);
+  #       font-weight: 200;
+  #       line-height: var(--sidebar-time-line-height);
+  #       letter-spacing: -0.05vw;
+  #       margin-left: -0.3vw;
+  #       color: rgba(255, 255, 255, 0.8);
+  #     }
+  #     .time-colon {
+  #       position: relative;
+  #       top: -.09em;
+  #     }
+  #     p {
+  #       font-family: SF Display, Roboto;
+  #       font-size: var(--sidebar-font-size);
+  #       line-height: var(--sidebar-line-height);
+  #       font-weight: 300;
+  #       letter-spacing: 0.06vw;
+  #       color: #6a7377;
+  #     }
+  #     p > b {
+  #       color: rgba(255, 255, 255, 0.8);
+  #     }
+  #     /* portrait */
+  #     @media screen and (max-width: 1200px) {
+  #       .time {
+  #         font-size: calc(var(--sidebar-time-font-size) * 1.4 );
+  #         line-height: calc(var(--sidebar-time-line-height) * 1.4 );
+  #       }
+  #       p {
+  #         font-size: calc(var(--sidebar-font-size) * 1.4 );
+  #         line-height: calc(var(--sidebar-line-height) * 1.4 );
+  #       }
+  #     }
+  #     /* phone */
+  #     @media screen and (max-width: 800px) {
+  #       .time {
+  #         font-size: calc(var(--sidebar-time-font-size) * 2.6 );
+  #       }
+  #       p {
+  #         font-size: calc(var(--sidebar-font-size) * 2.6 );
+  #         line-height: calc(var(--sidebar-line-height) * 2.6 );
+  #         letter-spacing: 0.16vw;
+  #       }
+  #       #name {
+  #         padding: 0 0 0 1vw;
+  #       }
+  #     }
