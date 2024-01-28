@@ -22,6 +22,8 @@ Oh and I'd like to come up with a better name for whatever this is, suggestions 
 
 Most of this is implemented leveraging the [custom button card](https://github.com/custom-cards/button-card) for home assistant.  This is a fantastic card that has so many capabilities.  There were several times where I would find a module in HACS to do something but then I'd realize I could make one better but just implementing using the custom button card.   More on that below. 
 
+![Main Screen](./readme_images/mainscreen.png)
+
 ## Technologies Used
 - Tech 1 - version 1.0
 - Tech 2 - version 2.0
